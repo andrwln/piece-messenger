@@ -1,0 +1,21 @@
+<div ng-controller='MainCtrl' class="container">
+  <form ng-submit="startMessage()">
+    <input type="text" ng-model="message.title"/>
+    <input type="text" ng-model="message.content"/>
+    <input type="submit" value="Send Confirms"/>
+    <p>Participants</p>
+    <li ng-repeat="participant in participants">
+      <input type="text" ng-model="participant.name"/>
+    </li>
+    <p>Recipients</p>
+    <li ng-repeat="recipient in recipients">
+      <input type="text" ng-model="recipient.name"/>
+    </li>
+  </form>
+  <button ng-click="addParticipant()">Add Participant</button>
+  <button ng-click="addRecipient()">Add Recipient</button>
+</div>
+<button ng-controller='AuthCtrl' ng-click="logout()">logout</button>
+Messages: {{messages}}<br/>
+Message: {{message}}
+

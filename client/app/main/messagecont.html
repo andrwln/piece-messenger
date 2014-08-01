@@ -1,0 +1,10 @@
+<div ng-controller='MainCtrl' class="container">
+  <form ng-submit="continueMessage()">
+    <input type="text" ng-model="message.content"/>
+    <input type="submit" value="Submit Addition"/>
+
+</div>
+<button ng-controlelr='AuthCtrl' ng-click="logout()">logout</button>
+Messages: {{messages}}<br/>
+Message: {{message}}
+
