@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('pieceMessageApp')
-  .controller('MainCtrl', function ($scope, Message, Auth, User) {
+  .controller('MainCtrl', function ($scope, Message, Auth, User, Feed) {
     $scope.messages = Message.all;
     $scope.message = {title: '', content: []};
+    $scope.feed = Feed.all;
 
     $scope.startMessage = function() {
       var user = User.getCurrent();
@@ -47,5 +48,9 @@ angular.module('pieceMessageApp')
       $scope.participants.push({});
       console.log($scope.participants);
     };
+
+    $scope.completeMsg = function() {
+      Feed.compile();
+    }
 
   });

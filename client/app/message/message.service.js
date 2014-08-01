@@ -5,20 +5,20 @@ angular.module('pieceMessageApp')
   function ($firebase, FIREBASE_URL, User) {
     var ref = new Firebase(FIREBASE_URL + 'messages');
     var messages = $firebase(ref);
-    messages.$on("loaded", function() {
-      var keys = messages.$child('-JTE5DXZkKz5WpmKsEuJ').$child('body');
-      var keysIndex = messages.$child('-JTE5DXZkKz5WpmKsEuJ').$child('body').$getIndex();
-      console.log(keysIndex);
-      var compiled = [];
-      for(var i = 0; i < keysIndex.length; i++) {
-        console.log(keys[keysIndex[i]].content);
-        compiled.push(keys[keysIndex[i]].content);
+    // messages.$on("loaded", function() {
+    //   var keys = messages.$child('-JTE5DXZkKz5WpmKsEuJ').$child('body');
+    //   var keysIndex = messages.$child('-JTE5DXZkKz5WpmKsEuJ').$child('body').$getIndex();
+    //   console.log(keysIndex);
+    //   var compiled = [];
+    //   for(var i = 0; i < keysIndex.length; i++) {
+    //     console.log(keys[keysIndex[i]].content);
+    //     compiled.push(keys[keysIndex[i]].content);
 
-        console.log(compiled);
-      }
-      var compiledMsg = compiled.join(' ');
-      console.log(compiledMsg);
-    })
+    //     console.log(compiled);
+    //   }
+    //   var compiledMsg = compiled.join(' ');
+    //   console.log(compiledMsg);
+    // })
 
     var Message = {
       all: messages,
