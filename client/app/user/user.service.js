@@ -15,13 +15,15 @@ angular.module('pieceMessageApp')
       users[username] = {
         md5_hash: authUser.md5_hash,
         username: username,
-        $priority: authUser.uid
+        $priority: authUser.uid,
+        turn: false
       }
       users.$save(username).then(function () {
         console.log(users);
         setCurrentUser(username);
       });
     },
+    usersRef: ref,
     findByUsername: function (username) {
       if (username) {
         return users.$child(username);
@@ -39,9 +41,11 @@ angular.module('pieceMessageApp')
 
 
   $rootScope.$on('$firebaseSimpleLogin:login', function (e, authUser) {
+    console.log("Logging in event");
     var query = $firebase(ref.startAt(authUser.uid).endAt(authUser.uid));
 
     query.$on('loaded', function () {
+      console.log('setting current user event', query.$getIndex())
       setCurrentUser(query.$getIndex()[0]);
     });
   });

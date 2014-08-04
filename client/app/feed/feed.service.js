@@ -26,8 +26,12 @@ angular.module('pieceMessageApp')
                   console.log(compiled);
                 }
                 var compiledMsg = compiled.join(' ');
-                console.log(compiledMsg);
-                feed.$add(compiledMsg);
+                var feedObj = {
+                  message: compiledMsg,
+                  id: messageId,
+                };
+                console.log(compiledMsg, feedObj);
+                feed.$add(feedObj);
 
                 console.log(User.all.$getIndex());
                 var userIndex = User.all.$getIndex();
@@ -42,6 +46,19 @@ angular.module('pieceMessageApp')
               })
           }
         }
+        // showFeed: function() {
+        //   var user = User.getCurrent();
+        //   messages.$on("loaded", function () {
+        //     console.log(user);
+        //     // var messageId = user.activeMessage;
+        //     var keys = feed.$getIndex();
+        //     for (var k = 0; k < keys.length; k++) {
+        //       if(feed.$child(keys[k]) == messageId) {
+        //         return feed.$child(keys[k]).message;
+        //       }
+        //     }
+        //   })
+        // }
     };
     return Feed;
   });
