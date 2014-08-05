@@ -39,7 +39,6 @@ angular.module('pieceMessageApp')
   };
 
 
-
   $rootScope.$on('$firebaseSimpleLogin:login', function (e, authUser) {
     console.log("Logging in event");
     var query = $firebase(ref.startAt(authUser.uid).endAt(authUser.uid));
@@ -47,6 +46,7 @@ angular.module('pieceMessageApp')
     query.$on('loaded', function () {
       console.log('setting current user event', query.$getIndex())
       setCurrentUser(query.$getIndex()[0]);
+      console.log(query.$getIndex());
     });
   });
 

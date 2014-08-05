@@ -1,0 +1,8 @@
+<div ng-controller='ShowMsgCtrl'>
+  {{ message.message }}<br/>
+  Authors:<div ng-repeat="contributor in message.contributors">
+  {{ contributor.name }}
+  </div>
+</div>
+
+<a href="/">Back to Home Page</a>

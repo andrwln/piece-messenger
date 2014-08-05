@@ -5,12 +5,16 @@
 'use strict';
 
 var errors = require('./components/errors');
+var twilio = require('./api/twilio')
 
 module.exports = function(app) {
 
   // Insert routes below
-  app.use('/api/things', require('./api/thing'));
-  
+  // app.use('/api/things', require('./api/thing'));
+
+  app.route('/twilio/sendSMS')
+    .post(twilio.sendSMS);
+
   // All undefined asset or api routes should return a 404
   app.route('/:url(api|auth|components|app|bower_components|assets)/*')
    .get(errors[404]);

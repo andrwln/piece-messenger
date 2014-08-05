@@ -18,6 +18,9 @@ angular.module('pieceMessageApp', [
         templateUrl: 'app/auth/register.html',
         controller: 'AuthCtrl'
       })
+      .when('/messages/:messageId', {
+        templateUrl: 'app/message/showmessage.html',
+      })
       .otherwise({
         redirectTo: '/'
       });

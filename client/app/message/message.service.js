@@ -3,6 +3,7 @@
 angular.module('pieceMessageApp')
   .factory('Message',
   function ($firebase, FIREBASE_URL, User, $rootScope) {
+    console.log(User.all);
     var ref = new Firebase(FIREBASE_URL + 'messages');
     var messages = $firebase(ref);
 
@@ -11,34 +12,25 @@ angular.module('pieceMessageApp')
       messageRef: ref,
       getCurrent: function() {
         var user = User.getCurrent();
-        console.log(user);
         var result;
 
         if(typeof user.activeMessage !== 'undefined') {
-          ref.child(user.activeMessage).child("aggregate").on("value", function(snap) {
+          ref.child(user.activeMessage).child("aggregate").once("value", function(snap) {
             if (snap.val() !== null) {
               result = snap.val().join(' ');
             }
-            // $scope. -- only thing to look out for when just using firebase instead of angularfire is to call $scope.$apply() if you ever declare anything in $scope.
-            // $scope.$apply();
           });
         }
         return result;
-        // messages.$child(user.activeMessage).$child("aggregate").$on("value", function(snap) {
-        //   console.log("EVENT", snap);
-        //   debugger;
-        //   // console.log("VALUE", snap.val());
-        // });
-
-        // return messages.$child(user.activeMessage).aggregate.join(' ');
       },
       create: function(message) {
+        var user = User.getCurrent();
         console.log(User.signedIn());
         if (User.signedIn()) {
           var participants = message.participants;
 
           return messages.$add(message).then(function (ref) {
-            var user = User.getCurrent();
+
             User.all.$child(user.username).$update({activeMessage: ref.name()});
             for(var i = 0; i < participants.length; i++) {
               console.log(participants[i].name)
@@ -83,26 +75,49 @@ angular.module('pieceMessageApp')
         var participants;
         var user = User.getCurrent();
         var current = user.activeMessage;
-        console.log(current);
-        user.$child('turn').$set(false);
-        ref.child(current).on("value", function(snap) {
+        var callCount = 0;
+
+        console.log(user.$child('turn'));
+        // ref is message ref
+        ref.child(current).once("value", function(snap) {
           participants = snap.val().participants;
           console.log(participants);
+          var currentUserIndex;
           for (var i = 0; i < participants.length; i++) {
-            console.log(participants[i].name);
-            console.log(user.username);
-            if(participants[i].name == user.username) {
-              if(i+1 < participants.length) {
-                var name = participants[i+1].name;
-                User.usersRef.child(name).child('turn').set(true);
-                console.log(User.usersRef)
-              }
-              else {
-                var name = participants[0].name;
-                User.usersRef.child(name).child('turn').set(true);
-              }
+            if(participants[i].name === user.username) {
+              currentUserIndex = i;
             }
+            User.usersRef.child(participants[i].name).child('turn').set(false);
           }
+          var nextUserIndex = (currentUserIndex+1) % participants.length;
+          User.usersRef.child(participants[nextUserIndex].name).child('turn').set(true);
+
+
+            // if(participants[i].name == user.username) {
+              // if(i+1 < participants.length) {
+              //   console.log('less than length is getting called')
+              //   callCount++;
+              //   console.log(callCount);
+              //   var name = participants[i+1].name;
+              //   console.log(name);
+              //   user.$child('turn').$set(false).then(function () {
+              //       User.usersRef.child(name).child('turn').set(true);
+              //       console.log(user.$child('turn'));
+              //       console.log(User.usersRef.child(name).child('turn'));
+              //   })
+              // }
+              // else {
+              //   var name = participants[0].name;
+              //   console.log(name);
+              //   console.log(user);
+              //   user.$child('turn').$set(false).then(function () {
+              //     console.log(user.$child('turn'));
+              //       User.usersRef.child(name).child('turn').set(true);
+
+              //       console.log(User.usersRef.child(name).child('turn'));
+              //     })
+              // }
+            // }
         })
       },
       find: function(messageId) {
