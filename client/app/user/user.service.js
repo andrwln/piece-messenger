@@ -40,7 +40,7 @@ angular.module('pieceMessageApp')
 
 
   $rootScope.$on('$firebaseSimpleLogin:login', function (e, authUser) {
-    console.log("Logging in event");
+    console.log("Logging in event", authUser.uid);
     var query = $firebase(ref.startAt(authUser.uid).endAt(authUser.uid));
 
     query.$on('loaded', function () {

@@ -10,37 +10,15 @@ angular.module('pieceMessageApp')
     var Message = {
       all: messages,
       messageRef: ref,
-      checkTurn: function() {
-        var user = User.getCurrent();
-        var message = user.activeMessage;
-        var messages = ref;
-        var users = User.usersRef;
-        var participants;
-        var active;
-        var newactive;
-        messages.child(message).child('participants').on("value", function(snap) {
-          participants = snap.val();
-          console.log(participants)
-        })
-        for (var i = 0; i < participants.length; i++) {
-          users.child(participants[i].name).child('turn').once("value", function(snap) {
-            active = snap.val();
-            console.log(active);
-            if (active === true) {
-              newactive = participants[i].name;
-            }
-          })
-        }
-        console.log(newactive);
-        return newactive;
-      },
       getCurrent: function() {
         var user = User.getCurrent();
         var result;
+
         if(typeof user.activeMessage !== 'undefined') {
           ref.child(user.activeMessage).child("aggregate").once("value", function(snap) {
+            if (snap.val() !== null) {
               result = snap.val().join(' ');
-              console.log(result);
+            }
           });
         }
         return result;
@@ -68,14 +46,27 @@ angular.module('pieceMessageApp')
           var body = messages.$child(user.activeMessage).$child('body')
           console.log(body);
           body.$add(message).then(function(ref) {
-            if (typeof user.activeMessage !== 'undefined') {
-              var messageId = user.activeMessage;
-              var currmessage = messages.$child(user.activeMessage);
-              var aggregate = currmessage.aggregate;
-              console.log(aggregate)
-              aggregate.push(message.content);
-              currmessage.$child('aggregate').$set(aggregate);
-            };
+            var messageId = user.activeMessage;
+            var currmessage = messages.$child(user.activeMessage)
+            var aggregate = currmessage.aggregate
+            console.log(aggregate)
+            aggregate.push(message.content);
+            // aggregate = aggregate.join(' ')
+            currmessage.$child('aggregate').$set(aggregate);
+            // var keys = messages.$child(user.activeMessage).$child('body');
+            // var keysIndex = keys.$getIndex();
+            // var compiled = [];
+            // for (var i = 0; i < keysIndex.length; i++) {
+            //   compiled.push(keys[keysIndex[i]].content);
+            //   console.log(compiled);
+            // }
+            // var compiledMsg = compiled.join(' ');
+            // var feedObj = {
+            //   message: compiledMsg,
+            //   id: messageId,
+            // };
+            // console.log(feedObj);
+            // return feedObj;
           });
         }
       },
@@ -87,6 +78,7 @@ angular.module('pieceMessageApp')
         var callCount = 0;
 
         console.log(user.$child('turn'));
+        // ref is message ref
         ref.child(current).once("value", function(snap) {
           participants = snap.val().participants;
           console.log(participants);
@@ -99,6 +91,33 @@ angular.module('pieceMessageApp')
           }
           var nextUserIndex = (currentUserIndex+1) % participants.length;
           User.usersRef.child(participants[nextUserIndex].name).child('turn').set(true);
+
+
+            // if(participants[i].name == user.username) {
+              // if(i+1 < participants.length) {
+              //   console.log('less than length is getting called')
+              //   callCount++;
+              //   console.log(callCount);
+              //   var name = participants[i+1].name;
+              //   console.log(name);
+              //   user.$child('turn').$set(false).then(function () {
+              //       User.usersRef.child(name).child('turn').set(true);
+              //       console.log(user.$child('turn'));
+              //       console.log(User.usersRef.child(name).child('turn'));
+              //   })
+              // }
+              // else {
+              //   var name = participants[0].name;
+              //   console.log(name);
+              //   console.log(user);
+              //   user.$child('turn').$set(false).then(function () {
+              //     console.log(user.$child('turn'));
+              //       User.usersRef.child(name).child('turn').set(true);
+
+              //       console.log(User.usersRef.child(name).child('turn'));
+              //     })
+              // }
+            // }
         })
       },
       find: function(messageId) {

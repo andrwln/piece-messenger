@@ -12,22 +12,10 @@
 
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div ng-controller="MainCtrl" class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-    <!-- <form class="navbar-form navbar-left" role="search" ng-submit="startMessage()" ng-show="signedIn()">
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Title" ng-model="message.title">
-      </div>
-      <div class="form-group">
-      <input type="text" class="form-control" placeholder="First Word" ng-model="message.content">
-      </div>
-      <div class="form-group" ng-repeat="participant in participants">
-        <select ng-model='participant.name' ng-options="user as user for user in availableUsers"></select>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form> -->
+
     <ul class="nav navbar-nav navbar-right" ng-show="signedIn()">
       <li>
         <a href="/users/{{ currentUser.username }}">
-          <img ng-src="http://www.gravatar.com/avatar/{{ currentUser.md5_hash }}" class="nav-pic" />
           {{ currentUser.username }}
         </a>
       </li>
@@ -47,19 +35,28 @@
 </nav>
 
 <div ng-controller='MainCtrl' class="container">
-  <form class="navbar-form navbar-left" role="search" ng-submit="startMessage()" ng-show="signedIn()">
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Title" ng-model="message.title">
+  <form name='startMessageForm' ng-submit="startMessage(startMessageForm.$valid)" ng-show="signedIn()" novalidate>
+
+    <div class='form-group'>
+      <div class='row'>
+        <div class='col-sm-8 col-md-8'>
+          <input ng-required='true' ng-maxlength='70' name="message_content" type="text" class="form-control input-class" placeholder="Start Message" ng-model="message.content">
+        </div>
+        <div class='col-md-4 col-sm-4'>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </div>
       </div>
-      <div class="form-group">
-      <input type="text" class="form-control" placeholder="First Word" ng-model="message.content">
+    </div>
+
+    <div class='row'>
+      <div ng-repeat="participant in participants">
+        <select required ng-model='participant.name' ng-options="user as user for user in availableUsers"></select>
       </div>
-      <div class="form-group" ng-repeat="participant in participants">
-        <select ng-model='participant.name' ng-options="user as user for user in availableUsers"></select>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
+    </div>
+
+  </form>
     <button class="btn btn-default" ng-click="addParticipant()">Add Participant</button>
+    <button ng-show="showRemove" class='btn btn-default' ng-click="removeParticipant()">Remove Participant</button>
 
     <div ng-repeat="(storyId, story) in feed | orderBy:'score': false">
       <div class="jumbotron">
