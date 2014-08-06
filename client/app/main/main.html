@@ -61,9 +61,12 @@
     </form>
     <button class="btn btn-default" ng-click="addParticipant()">Add Participant</button>
 
-    <div ng-repeat="(storyId, story) in feed">
+    <div ng-repeat="(storyId, story) in feed | orderBy:'score': false">
       <div class="jumbotron">
-        <p><a href="/messages/{{storyId}}">{{story.message}}</a></p>
+        <div class="vote up"><span ng-hide="downVoted(story)" ng-click="upVotePost(storyId, upVoted(story))">▲</span></div>
+
+        <div class="vote down"><span ng-hide="upVoted(story)" ng-click="downVotePost(storyId, downVoted(story))">▼</span></div>
+        <p><a href="/messages/{{storyId}}">{{story.message}}</a><span>{{ story.score || 0 }}</p>
 
         <div ng-repeat="contributor in story.contributors">
           <div>{{contributor.name}}</div>

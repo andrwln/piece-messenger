@@ -1,15 +1,14 @@
 <div ng-show="checkView()" ng-controller='MainCtrl' class="container">
   <form ng-submit="continueMessage()">
     <input type="text" ng-model="message.content"/>
-    <input type="submit" value="Submit Addition"/>
+    <input type="submit" value="Submit Addition and Continue Message"/>
   </form>
-  <button ng-click="completeMsg()">Complete Message</button>
-  <button ng-click="checkView()">Check View</button>
+  <button ng-click="completeMsg()">Complete the Message Without Adding a Submission</button>
+  <button ng-click="addAndComplete()">Add Your Submission and Complete Message</button>
 </div>
 <button ng-controlelr='AuthCtrl' ng-click="logout()">logout</button>
-Feed: {{feed}}<br/>
 Current Feed: {{currFeed || "No current feed available."}}
 
 <h1 ng-hide="checkView()">NOT YOUR TURN YET</h1>
 
-Waiting on User: {{checkTurn()}}
+Waiting on User: {{checkTurn}}

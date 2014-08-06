@@ -18,32 +18,11 @@ angular.module('pieceMessageApp')
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
         if (newval) {
-          $scope.checkTurn = function () {
-            var user = User.getCurrent();
+          console.log(Message.checkTurn());
+          $scope.checkTurn = Message.checkTurn();
             if (typeof user.activeMessage === 'undefined') {
               $location.path('/');
             }
-            else {
-              var message = user.activeMessage;
-              var messages = Message.messageRef;
-              var users = User.usersRef;
-              var participants;
-              var active;
-              var newactive;
-              messages.child(message).child('participants').once("value", function(snap) {
-                participants = snap.val();
-              })
-              for (var i = 0; i < participants.length; i++) {
-                users.child(participants[i].name).child('turn').once("value", function(snap) {
-                  active = snap.val();
-                  if (active === true) {
-                    newactive = participants[i].name;
-                  }
-                })
-              }
-              return newactive;
-            }
-        }
       }
     })
 
@@ -87,12 +66,12 @@ angular.module('pieceMessageApp')
       if(newval) {
         if (User.signedIn()) {
           $scope.currFeed = Message.getCurrent();
-
+          console.log(Message.getCurrent());
           $scope.allUsers = function() {
             var availableUsers = []
             var userObj;
             var user = User.getCurrent();
-            User.usersRef.on("value", function(snap) {
+            User.usersRef.once("value", function(snap) {
                 userObj = snap.val();
                 for(var key in userObj) {
                   if (typeof userObj[key].activeMessage === 'undefined' && userObj[key].username !== user.username) {
@@ -104,11 +83,6 @@ angular.module('pieceMessageApp')
             return availableUsers;
           }
         }
-        $scope.$watch("allUsers", function(newval, oldval) {
-          if (newval) {
-            $scope.allUsers();
-          }
-        })
       }
     });
 
@@ -132,12 +106,54 @@ angular.module('pieceMessageApp')
 
         $scope.completeMsg = function() {
           var user = User.getCurrent();
-          user.$child('turn').$set(false);
+          // user.$child('turn').$set(false);
           console.log('submitting message')
           Feed.compile();
           $location.path('/');
           }
         }
-      })
+      });
+
+    $rootScope.$watch('currentUser', function(newval, oldval) {
+      if (newval) {
+
+        $scope.addAndComplete = function() {
+          var user = User.getCurrent();
+          // user.$child('turn').$set(false);
+          console.log('submitting message')
+          var message = {
+            user: user.md5_hash,
+            content: $scope.message.content
+          }
+          Message.add(message);
+          Feed.compile();
+          $location.path('/');
+          }
+        }
+      });
+
+    $scope.upVotePost = function (postId, upVoted) {
+      if (upVoted) {
+        Feed.clearVote(postId, upVoted);
+      } else {
+        Feed.upVote(postId);
+      }
+    };
+
+    $scope.downVotePost = function (postId, downVoted) {
+      if (downVoted) {
+        Feed.clearVote(postId, !downVoted);
+      } else {
+        Feed.downVote(postId);
+      }
+    };
+
+    $scope.upVoted = function (post) {
+      return Feed.upVoted(post);
+    };
+
+    $scope.downVoted = function (post) {
+      return Feed.downVoted(post);
+    };
 
   });
