@@ -33,14 +33,25 @@ angular.module('pieceMessageApp')
                   compiled.push(keys[keysIndex[i]].content);
                 }
                 var compiledMsg = compiled.join(' ');
+                console.log(compiledMsg.length);
+                var cellPhone;
+                messagesref.child(messageId).child('recipient').once("value", function(snap) {
+                  console.log(snap.val())
+                  if (compiledMsg.length < 1000) {
+                    cellPhone = snap.val();
+                  }
+                });
                 var feedObj = {
                   message: compiledMsg,
                   id: messageId,
-                  contributors: contributors
+                  contributors: contributors,
+                  cellPhone: cellPhone
                 };
-                $http.post('/twilio/sendSMS', feedObj).success(function(sms) {
-                  console.log(sms);
-                });
+                if(cellPhone !== null) {
+                  $http.post('/twilio/sendSMS', feedObj).success(function(sms) {
+                    console.log(sms);
+                  });
+                };
                 feed.$add(feedObj);
                 var userIndex = User.all.$getIndex();
                 var users = User.all;

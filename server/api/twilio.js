@@ -11,7 +11,10 @@ var client = require('twilio')(accountSid, authToken);
 // Function to send automated SMS
 exports.sendSMS = function(req, res) {
 
+  console.log(req.body);
   var message = req.body.message;
+  var cellPhone = req.body.cellPhone;
+
 
   // console.log('sms message ', message);
 
@@ -19,7 +22,7 @@ exports.sendSMS = function(req, res) {
   // var client = require('twilio')(accountSid, authToken);
 
   client.messages.create({
-    to: "+16264977166",
+    to: "+1" + cellPhone,
     from: "+16262437222",
     body: message
   }, function(err, message) {

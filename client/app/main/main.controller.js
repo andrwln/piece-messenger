@@ -5,6 +5,7 @@ angular.module('pieceMessageApp')
     $scope.messages = Message.all;
     $scope.message = {title: '', content: []};
     $scope.feed = Feed.all;
+    $scope.hideAggregate = false;
     var userArr = [];
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
@@ -13,8 +14,23 @@ angular.module('pieceMessageApp')
             var user = User.getCurrent();
             return user.turn;
           }
+          $scope.checkActive = function() {
+            var user = User.getCurrent();
+            if(typeof user.activeMessage !== 'undefined' && !user.turn) {
+              return true;
+            }
+            else {
+              return false;
+            }
+          }
+          $scope.activeView = function() {
+            var user = User.getCurrent();
+            return user.activeMessage;
+          }
       }
     })
+
+
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
         if (newval) {
@@ -41,7 +57,6 @@ angular.module('pieceMessageApp')
                 })
               }
               })
-
               return newactive;
             }
         }
@@ -63,31 +78,31 @@ angular.module('pieceMessageApp')
       var nameOccurance = 0;
       for (var i = 0; i < $scope.participants.length; i++) {
         for(var j = 0; j < $scope.participants.length; j++) {
-          if ($scope.participants[i] === $scope.participants[j]) {
-            nameOccurance++
+
+          if ($scope.participants[i].name === $scope.participants[j].name) {
+            nameOccurance++;
           }
-          console.log(nameOccurance);
+        }
           if (nameOccurance > 1) {
-            alert($scope.participants[i] + ' is included twice. Each user can only be included once in the message.')
+            alert($scope.participants[i].name + ' is included twice. Each user can only be included once in the message.')
+            return
           }
           else {
             nameOccurance = 0;
           }
-        }
       }
        if (typeof user.activeMessage === 'undefined') {
         var message = {
           title: $scope.message.title,
           body: [{user: user.md5_hash, content: $scope.message.content}],
           participants: $scope.participants,
-          recipients: $scope.recipients,
+          recipient: $scope.recipient,
           aggregate: [$scope.message.content]
         }
         message.participants.push({name: user.username});
         Message.create(message).then(function() {
           Message.next();
           $scope.message = {title: '', content: []};
-          $location.path('/messagecont/')
         });
       }
       else {
@@ -112,11 +127,32 @@ angular.module('pieceMessageApp')
       }
     })
 
+    $scope.showAggregate = function() {
+      $scope.hideAggregate = true;
+      $rootScope.$watch("currentUser", function(newval, oldval) {
+      if(newval) {
+        if (User.signedIn()) {
+          Message.getCurrent();
+          $rootScope.$watch("aggregate", function(newval, oldval) {
+            if(newval) {
+              $scope.currFeed = newval;
+              }
+            })
+          }
+        }
+      })
+    }
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
       if(newval) {
         if (User.signedIn()) {
-          $scope.currFeed = Message.getCurrent();
+          // Message.getCurrent();
+          // $rootScope.$watch("aggregate", function(newval, oldval) {
+          //   if(newval) {
+          //     console.log(newval);
+          //     $scope.currFeed = newval;
+          //   }
+          // })
 
           $scope.allUsers = function() {
             var availableUsers = []
@@ -128,7 +164,6 @@ angular.module('pieceMessageApp')
                   if (typeof userObj[key].activeMessage === 'undefined' && userObj[key].username !== user.username) {
                     availableUsers.push(userObj[key].username);
                     $scope.availableUsers = availableUsers;
-                    // $scope.$apply();
                   }
                 }
               });
@@ -156,6 +191,7 @@ angular.module('pieceMessageApp')
 
     $scope.addParticipant = function() {
       $scope.participants.push({});
+      console.log($scope.participants);
       if ($scope.participants.length > 0) {
         $scope.showRemove = true;
       }
@@ -163,7 +199,7 @@ angular.module('pieceMessageApp')
 
     $scope.removeParticipant = function() {
       $scope.participants.pop();
-      if ($scope.participants.length = 0) {
+      if ($scope.participants.length === 0) {
         $scope.showRemove = false;
       }
     }
@@ -173,7 +209,7 @@ angular.module('pieceMessageApp')
 
         $scope.completeMsg = function() {
           var user = User.getCurrent();
-          // user.$child('turn').$set(false);
+          user.$child('turn').$set(false);
           console.log('submitting message')
           Feed.compile();
           $location.path('/');
@@ -186,7 +222,7 @@ angular.module('pieceMessageApp')
 
         $scope.addAndComplete = function() {
           var user = User.getCurrent();
-          // user.$child('turn').$set(false);
+          user.$child('turn').$set(false);
           console.log('submitting message')
           var message = {
             user: user.md5_hash,

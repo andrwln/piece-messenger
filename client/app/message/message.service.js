@@ -7,21 +7,23 @@ angular.module('pieceMessageApp')
     var ref = new Firebase(FIREBASE_URL + 'messages');
     var messages = $firebase(ref);
 
+
+
     var Message = {
       all: messages,
       messageRef: ref,
       getCurrent: function() {
+
         var user = User.getCurrent();
         var result;
-
         if(typeof user.activeMessage !== 'undefined') {
+
           ref.child(user.activeMessage).child("aggregate").once("value", function(snap) {
             if (snap.val() !== null) {
-              result = snap.val().join(' ');
+              return $rootScope.aggregate = snap.val().join(' ');
             }
           });
         }
-        return result;
       },
       create: function(message) {
         var user = User.getCurrent();
@@ -77,11 +79,9 @@ angular.module('pieceMessageApp')
         var current = user.activeMessage;
         var callCount = 0;
 
-        console.log(user.$child('turn'));
         // ref is message ref
         ref.child(current).once("value", function(snap) {
           participants = snap.val().participants;
-          console.log(participants);
           var currentUserIndex;
           for (var i = 0; i < participants.length; i++) {
             if(participants[i].name === user.username) {

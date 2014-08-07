@@ -35,38 +35,76 @@
 </nav>
 
 <div ng-controller='MainCtrl' class="container">
-  <form name='startMessageForm' ng-submit="startMessage(startMessageForm.$valid)" ng-show="signedIn()" novalidate>
+  <div ng-hide="checkActive()">
+    <div ng-hide='activeView()'>
+      <form name='startMessageForm' ng-submit="startMessage(startMessageForm.$valid)" ng-show="signedIn()" novalidate>
 
-    <div class='form-group'>
+        <div class='form-group'>
+          <div class='row'>
+            <div class='col-sm-10 col-md-10'>
+              <input ng-required='true' ng-maxlength='70' name="message_content" type="text" class="form-control" placeholder="Start Message" ng-model="message.content">
+            </div>
+            <div class='col-md-2 col-sm-2'>
+              <button type="submit" class="btn btn-default">Submit</button>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div>
+        <div>
+          <button class="btn btn-default col-md-3 col-sm-3" ng-click="addParticipant()">Add Participant</button>
+          <button ng-show="showRemove" class='btn btn-default col-md-3 col-sm-3' ng-click="removeParticipant()">Remove Participant</button><br/>
+        </div>
+      </div><br/>
       <div class='row'>
-        <div class='col-sm-8 col-md-8'>
-          <input ng-required='true' ng-maxlength='70' name="message_content" type="text" class="form-control input-class" placeholder="Start Message" ng-model="message.content">
+        <div class="col-md-2 col-sm-2"ng-repeat="participant in participants">
+          <select class="form-control" required ng-model='participant.name' ng-options="user as user for user in availableUsers"></select>
         </div>
-        <div class='col-md-4 col-sm-4'>
-          <button type="submit" class="btn btn-default">Submit</button>
+      </div><br/>
+      <div>
+        <form>
+          <input class="form-control" type="text" placeholder="Add Recipient Phone # (optional)" ng-model='recipient'><br/>
+        </form>
+      </div>
+    </div>
+  </div>
+  <div ng-show="checkActive()">
+    <h3>You are currently participating in a message but it is not your turn. It is currently {{ checkTurn() }}'s turn.</h3>
+  </div>
+
+    <h2 ng-hide="signedIn()" class="text-center"><a href="/login">Log in </a>to start a new message!</h2><br/>
+    <div ng-show="checkView()">
+      <div ng-controller='MainCtrl' class="container">
+        <button class="btn btn-default" ng-click="showAggregate()" ng-hide="hideAggregate">Show the message so far.</button>
+        <div class="jumbotron" ng-show="hideAggregate"><strong>This is what you and other contributors have written so far:</strong> "{{currFeed}}"</div>
+        <!-- Current Feed: {{currFeed || "No current feed available."}} -->
+        <div>
+          <form ng-submit="continueMessage()">
+            <input class="form-control" type="text" ng-model="message.content"/>
+            <input class="btn btn-default" type="submit" value="Submit Addition and Continue Message"/>
+          </form>
+          <button class="btn btn-default" ng-click="completeMsg()">Complete the Message Without Adding a Submission</button>
+          <button class="btn btn-default" ng-click="addAndComplete()">Add Your Submission and Complete Message</button>
         </div>
       </div>
     </div>
-
-    <div class='row'>
-      <div ng-repeat="participant in participants">
-        <select required ng-model='participant.name' ng-options="user as user for user in availableUsers"></select>
-      </div>
-    </div>
-
-  </form>
-    <button class="btn btn-default" ng-click="addParticipant()">Add Participant</button>
-    <button ng-show="showRemove" class='btn btn-default' ng-click="removeParticipant()">Remove Participant</button>
 
     <div ng-repeat="(storyId, story) in feed | orderBy:'score': false">
       <div class="jumbotron">
-        <div class="vote up"><span ng-hide="downVoted(story)" ng-click="upVotePost(storyId, upVoted(story))">▲</span></div>
+        <div class="text-right">
+          <p>{{ story.score || 0 }}</p>
+          <div class="vote up"><span ng-hide="downVoted(story)" ng-click="upVotePost(storyId, upVoted(story))">▲</span></div>
+          <div class="vote down"><span ng-hide="upVoted(story)" ng-click="downVotePost(storyId, downVoted(story))">▼</span></div>
+        </div>
+        <p><!-- <a href="/messages/{{storyId}}"> -->{{story.message}}<!-- </a> --><br/>
 
-        <div class="vote down"><span ng-hide="upVoted(story)" ng-click="downVotePost(storyId, downVoted(story))">▼</span></div>
-        <p><a href="/messages/{{storyId}}">{{story.message}}</a><span>{{ story.score || 0 }}</p>
 
-        <div ng-repeat="contributor in story.contributors">
-          <div>{{contributor.name}}</div>
+        <div class="text-center">
+          <h3>Authors:</h3>
+          <div ng-repeat="contributor in story.contributors">
+            <li>{{contributor.name}}</li>
+          </div>
         </div>
       </div>
     </div>
