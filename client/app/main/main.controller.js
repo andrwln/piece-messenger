@@ -5,8 +5,10 @@ angular.module('pieceMessageApp')
     $scope.messages = Message.all;
     $scope.message = {title: '', content: []};
     $scope.feed = Feed.all;
+    console.log($scope.feed);
     $scope.hideAggregate = false;
     var userArr = [];
+
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
         if (newval) {
@@ -29,8 +31,6 @@ angular.module('pieceMessageApp')
           }
       }
     })
-
-
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
         if (newval) {
