@@ -9,6 +9,13 @@ angular.module('pieceMessageApp')
     $scope.hideAggregate = false;
     var userArr = [];
 
+    $rootScope.$watch("userTurns", function(newval, oldval) {
+      if(newval) {
+        console.log('userTurn changed')
+        $scope.message.content = '';
+      }
+    })
+
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
         if (newval) {
@@ -112,6 +119,8 @@ angular.module('pieceMessageApp')
     $rootScope.$watch("currentUser", function(newval, oldval) {
       if(newval) {
         $scope.continueMessage = function() {
+          $scope.hideAggregate = false;
+
           console.log($scope.message.content.length);
           if($scope.message.content.length === 0) {
             alert('Enter an addition to the message or complete the message without adding a submission.')
@@ -121,9 +130,13 @@ angular.module('pieceMessageApp')
             user: user.md5_hash,
             content: $scope.message.content
           }
+
           Message.add(message);
+          $scope.message.content = '';
           Message.next();
         };
+
+
       }
     })
 
@@ -133,11 +146,11 @@ angular.module('pieceMessageApp')
       if(newval) {
         if (User.signedIn()) {
           Message.getCurrent();
-          $rootScope.$watch("aggregate", function(newval, oldval) {
-            if(newval) {
-              $scope.currFeed = newval;
-              }
-            })
+          // $rootScope.$watch("aggregate", function(newval, oldval) {
+          //   if(newval) {
+              $scope.currFeed = $rootScope.aggregate;
+            //   }
+            // })
           }
         }
       })
@@ -208,10 +221,12 @@ angular.module('pieceMessageApp')
       if (newval) {
 
         $scope.completeMsg = function() {
+          // $scope.participants = [];
           var user = User.getCurrent();
           user.$child('turn').$set(false);
           console.log('submitting message')
           Feed.compile();
+
           $location.path('/');
           }
         }
@@ -221,6 +236,7 @@ angular.module('pieceMessageApp')
       if (newval) {
 
         $scope.addAndComplete = function() {
+          // $scope.participants = [];
           var user = User.getCurrent();
           user.$child('turn').$set(false);
           console.log('submitting message')
@@ -230,6 +246,7 @@ angular.module('pieceMessageApp')
           }
           Message.add(message);
           Feed.compile();
+
           $location.path('/');
           }
         }

@@ -36,27 +36,27 @@
 
 <div ng-controller='MainCtrl' class="container">
   <div ng-hide="checkActive()">
-    <h4 ng-hide='activeView()'>Welcome to the StoryCollab App. To begin a collaborative story, submit a couple words with at least one participant. Each user will see what has been written so far and have the opportunity to add onto it. If you want to send the finished story to a friend, input a phone # in the recipient field.</h4><br/>
+    <h4 ng-hide='activeView()'>Welcome to the StoryCollab App. To begin a collaborative story, login. Then submit a couple words with at least one participant. Each user will see what has been written so far and have the opportunity to add onto it. If you want to send the finished story to a friend, input a phone # in the recipient field.</h4><br/>
     <div ng-hide='activeView()'>
       <form name='startMessageForm' ng-submit="startMessage(startMessageForm.$valid)" ng-show="signedIn()" novalidate>
 
         <div class='form-group'>
           <div class='row'>
             <div class='col-sm-10 col-md-10'>
-              <input ng-required='true' ng-maxlength='70' name="message_content" type="text" class="form-control" placeholder="Start Message" ng-model="message.content">
+              <input ng-required='true' ng-maxlength='70' name="message_content" type="text" class="form-control" placeholder="Once Upon a Time..." ng-model="message.content">
             </div>
             <div class='col-md-2 col-sm-2'>
-              <button type="submit" class="btn btn-success">Start Message</button>
+              <button type="submit" class="btn btn-success">Start Story</button>
             </div>
           </div>
         </div>
       </form>
-       <div class="row">
+       <div ng-show="signedIn()" class="row">
         <form class="col-md-10 col-sm-10">
           <input class="form-control" type="text" placeholder="Add Recipient Phone # (optional)" ng-model='recipient'><br/>
         </form>
       </div>
-      <div>
+      <div ng-show='signedIn()'>
         <button class="btn btn-primary" ng-click="addParticipant()">Add Participant ( + )</button>
         <button ng-show="showRemove" class='btn btn-danger' ng-click="removeParticipant()">Remove Participant ( - )</button><br/>
       </div></br>
@@ -71,16 +71,16 @@
     </div>
   </div>
   <div class='jumbotron' ng-show="checkActive()">
-    <h3>You are currently participating in a message but it is not your turn. It is currently {{ checkTurn() }}'s turn.</h3>
+    <h3>You are currently participating in a story but it is not your turn. It is currently {{ checkTurn() }}'s turn.</h3>
   </div>
 
-    <h2 ng-hide="signedIn()" class="text-center"><a href="/login">Log in </a>to start a new message!</h2><br/>
+    <h2 ng-hide="signedIn()" class="text-center"><a href="/login">Log in</a> to start a new message!</h2><br/>
 
     <div ng-show="checkView()">
       <div ng-controller='MainCtrl' class="container">
         <div class='row'>
           <div class='col-md-12 col-sm-12 text-center'>
-            <button class="btn btn-success" ng-click="showAggregate()" ng-hide="hideAggregate">Click to Show Current Message</button>
+            <button class="btn btn-success" ng-click="showAggregate()" ng-hide="hideAggregate">It's your turn! Click to Show Current Message</button>
 
             <div class="jumbotron" ng-show="hideAggregate"><strong>This is what you and other contributors have written so far:</strong> "{{currFeed || "No current feed yet." }}"</div>
           </div>
@@ -93,9 +93,9 @@
             </form><br/>
           </div>
           <div class='btn-group-sm text-center'>
-            <button class="btn btn-success" ng-click="continueMessage()">Add Contribution and Continue Message</button>
-            <button class="btn btn-danger" ng-click="completeMsg()">Finish Message Without Contributing</button>
-            <button class="btn btn-warning" ng-click="addAndComplete()">Add Contribution and Finish Message </button>
+            <button class="btn btn-success" ng-click="continueMessage()">Add Contribution and Continue the Story</button>
+            <button class="btn btn-danger" ng-click="completeMsg()">Finish the Story Without Contributing</button>
+            <button class="btn btn-warning" ng-click="addAndComplete()">Add Contribution and Finish the Story </button>
           </div><br/>
         </div>
       </div>
@@ -114,7 +114,7 @@
           </div>
           <div class="row">
             <div class='col-md-10 col-sm-10'>
-              <span><strong>User Rating:</strong> {{ story.score || 0 }}</span>
+              <span><strong>User Up Votes:</strong> {{ story.score || 0 }}</span>
             </div>
             <div class='text-right col-md-2 col-sm-2'>
 
