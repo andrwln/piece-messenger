@@ -136,7 +136,6 @@ angular.module('pieceMessageApp')
           Message.next();
         };
 
-
       }
     })
 
@@ -158,7 +157,7 @@ angular.module('pieceMessageApp')
 
     $rootScope.$watch("currentUser", function(newval, oldval) {
       if(newval) {
-        if (User.signedIn()) {
+        // if (User.signedIn()) {
           // Message.getCurrent();
           // $rootScope.$watch("aggregate", function(newval, oldval) {
           //   if(newval) {
@@ -182,7 +181,7 @@ angular.module('pieceMessageApp')
               });
             return availableUsers;
           }
-        }
+        // }
         $scope.$watch("allUsers", function(newval, oldval) {
           if (newval) {
             $scope.allUsers();
